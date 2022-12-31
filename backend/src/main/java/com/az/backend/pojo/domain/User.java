@@ -1,10 +1,10 @@
 package com.az.backend.pojo.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 
@@ -58,6 +58,11 @@ public class User implements Serializable {
      * 状态(0正常 )
      */
     private Integer userStatus;
+
+    /**
+     * 0-普通用户 1-管理员
+     */
+    private Integer userRole;
 
     /**
      * 创建时间

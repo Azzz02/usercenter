@@ -1,5 +1,7 @@
 server:
-  port: 8000
+  port: 8888
+  servlet:
+    context-path: /api
 
 spring:
   datasource:
@@ -7,7 +9,8 @@ spring:
     url: jdbc:mysql://localhost:3306/manager
     username: root
     password: zjw20020222
-
+  session:
+    timeout: 86400
 mybatis-plus:
   global-config:
     db-config:

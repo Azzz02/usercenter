@@ -1,6 +1,6 @@
 package com.az.backend.service.impl;
-import java.util.Date;
 
+import com.az.backend.constant.UserConstant;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.az.backend.pojo.domain.User;
@@ -32,10 +32,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     private static final String salt="az";
 
-    /**
-     * 用户登录态键
-     */
-    private static final String USER_LOGIN_STATE="userLoginState";
+
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -89,33 +86,44 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return null;
         }
 
-        //检验特殊字符
         //用户不存在
         String encodepassword = DigestUtils.md5DigestAsHex((salt + userPassword).getBytes());
         QueryWrapper<User> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("userAccount",userAccount).eq("userPassword",encodepassword);
         User user = userMapper.selectOne(queryWrapper);
         if(user==null){
-            log.info("user login failed,userAccount cannot match userPassword");
+            log.info("user login failed ,userAccount cannot match userPassword");
             return null;
         }
         //3.用户脱敏
-        User newUser=new User();
-        newUser.setId(user.getId());
-        newUser.setUsername(user.getUsername());
-        newUser.setUserAccount(user.getUserAccount());
-        newUser.setAvatarUrl(user.getAvatarUrl());
-        newUser.setGender(user.getGender());
-        newUser.setPhone(user.getPhone());
-        newUser.setEmail(user.getEmail());
-        newUser.setUserStatus(user.getUserStatus());
-        newUser.setCreatTime(user.getCreatTime());
+        User newUser=getSafetyUser(user);
         //4.记录用户登录态
-        request.getSession().setAttribute(USER_LOGIN_STATE,newUser);
-
+        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE,newUser);
 
         return newUser;
     }
+
+    /**
+     * 用户脱敏
+     * @param originUser
+     * @return
+     */
+    @Override
+    public User getSafetyUser(User originUser){
+        User safetyUser=new User();
+        safetyUser.setId(originUser.getId());
+        safetyUser.setUsername(originUser.getUsername());
+        safetyUser.setUserAccount(originUser.getUserAccount());
+        safetyUser.setAvatarUrl(originUser.getAvatarUrl());
+        safetyUser.setGender(originUser.getGender());
+        safetyUser.setPhone(originUser.getPhone());
+        safetyUser.setEmail(originUser.getEmail());
+        safetyUser.setUserRole(originUser.getUserRole());
+        safetyUser.setUserStatus(originUser.getUserStatus());
+        safetyUser.setCreatTime(originUser.getCreatTime());
+        return safetyUser;
+    }
+
 }
 
 
