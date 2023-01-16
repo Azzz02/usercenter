@@ -57,7 +57,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         QueryWrapper<User> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("userAccount",userAccount);
         long count = userMapper.selectCount(queryWrapper);
-        if(count>1){
+        if(count>0){
             return -5;
         }
         //2.加密密码
@@ -110,6 +110,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public User getSafetyUser(User originUser){
+        if(originUser==null){
+            return null;
+        }
         User safetyUser=new User();
         safetyUser.setId(originUser.getId());
         safetyUser.setUsername(originUser.getUsername());
